@@ -2,8 +2,13 @@ import { useState } from "react";
 import notesIcon from "../assets/2-side/note-logo.svg";
 import binIcon from "../assets/2-side/bin-logo.svg";
 
+const SIDEBAR_ITEMS = {
+    NOTES: "notes",
+    BIN: "bin"
+}
+
 export default function Sidebar() {
-    const [selected, setSelected] = useState("notes");
+    const [selected, setSelected] = useState(SIDEBAR_ITEMS.NOTES);
 
     function handleSelect(type) {
         setSelected(type);
