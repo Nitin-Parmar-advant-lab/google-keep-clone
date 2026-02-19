@@ -14,23 +14,23 @@ export default function Sidebar() {
         setSelected(type);
     }
 
-    let notesClass = "w-6 h-6 rounded-full p-1";
-    let binClass = "w-6 h-6 rounded-full p-1";
+    let notesClass = "w-10 h-10 rounded-full p-1";
+    let binClass = "w-10 h-10 rounded-full p-1";
 
-    if (selected === "notes") {
+    if (selected === SIDEBAR_ITEMS.NOTES) {
         notesClass += " bg-[#feefc3]";
     } else {
         binClass += " bg-[#feefc3]";
     }
 
     return (
-        <div className="min-h-screen overflow-y-auto w-9 fixed z-10 flex flex-col items-center gap-3 pt-3">
+        <div className="min-h-screen overflow-y-auto w-18 fixed z-10 flex flex-col items-center gap-5 pt-6">
             <div id="notes">
                 <img
                     src={notesIcon}
                     alt="notes"
                     className={notesClass}
-                    onClick={() => handleSelect("notes")}
+                    onClick={() => handleSelect(SIDEBAR_ITEMS.NOTES)}
                 />
             </div>
 
@@ -39,7 +39,7 @@ export default function Sidebar() {
                     src={binIcon}
                     alt="deleted notes"
                     className={binClass}
-                    onClick={() => handleSelect("bin")}
+                    onClick={() => handleSelect(SIDEBAR_ITEMS.BIN)}
                 />
             </div>
         </div>
