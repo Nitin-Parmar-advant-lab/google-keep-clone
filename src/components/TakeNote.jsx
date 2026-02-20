@@ -1,31 +1,34 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-
 import pinIcon from "../assets/3-take-note/pin.svg";
 import pinFilledIcon from "../assets/3-take-note/pin-filled.svg";
 
-export default function TakeNote({ addNote }) {
-    const [isTyping, setTyping] = useState(false);
+export default function TakeNote({
+    addNote,
+
+    initialNote,
+    onSaveModal,
+    onDeleteModal,
+    isModalView = false,
+}) {
+    const [isTyping, setTyping] = useState(isModalView);
     const ref = useRef(null);
 
-    const [content, setContent] = useState({
-        title: "",
-        description: "",
-        pin: false,
-    });
+    const [content, setContent] = useState(
+        initialNote || {
+            title: "",
+            description: "",
+            pin: false,
+            isDeleted: false,
+        },
+    );
 
     function handleContent(e) {
         const { name, value } = e.target;
-        setContent((prevContent) => ({
-            ...prevContent,
-            [name]: value,
-        }));
+        setContent((prev) => ({ ...prev, [name]: value }));
     }
 
     function handlePinClick() {
-        setContent((prevContent) => ({
-            ...prevContent,
-            pin: !prevContent.pin,
-        }));
+        setContent((prev) => ({ ...prev, pin: !prev.pin }));
     }
 
     function handleTyping() {
@@ -33,44 +36,52 @@ export default function TakeNote({ addNote }) {
     }
 
     function handleClose() {
-        if (content.title.trim() || content.description.trim()) {
-            addNote(content);
+        if (isModalView) {
+            onSaveModal(content);
+        } else {
+            if (content.title.trim() || content.description.trim()) {
+                addNote(content);
+            }
+            setTyping(false);
+            setContent({
+                title: "",
+                description: "",
+                pin: false,
+                isDeleted: false,
+            });
         }
-
-        setTyping(false);
-        setContent({
-            title: "",
-            description: "",
-            pin: false,
-        });
     }
-
 
     const handleOutsideClick = useCallback(function handleOutsideClick(e) {
         if (ref.current && !ref.current.contains(e.target)) {
             handleClose();
         }
-    })
+    }, []);
 
     useEffect(() => {
-        if (!isTyping) return;
+        if (!isTyping || isModalView) return;
 
         document.addEventListener("mousedown", handleOutsideClick);
-        return () => {
+        return () =>
             document.removeEventListener("mousedown", handleOutsideClick);
-        };
-    }, [isTyping]);
-    
+    }, [isTyping, isModalView, handleOutsideClick]);
+
+    function handleInputResize(e) {
+        e.target.style.height = "auto";
+        e.target.style.height = `${e.target.scrollHeight}px`;
+    }
+
     const visual = (
         <div
             id="visual"
-            className="w-140 h-13 flex items-center pl-3 rounded-md shadow-md/25 border border-gray-200 "
+            className="w-140 h-13 flex items-center pl-3 mt-5 rounded-md shadow-md/25 border border-gray-200 cursor-text"
             onClick={handleTyping}
         >
             <input
                 type="text"
                 placeholder="Take a note..."
-                className="text-md font-medium h-8 outline-none "
+                className="text-md font-medium h-8 outline-none pointer-events-none"
+                readOnly
             />
         </div>
     );
@@ -78,37 +89,58 @@ export default function TakeNote({ addNote }) {
     const typing = (
         <div
             id="working"
-            className="flex flex-col w-140 h-30 pl-3 rounded-md shadow-md/25 border border-gray-200 gap-2"
+            className="flex flex-col w-140 min-h-30 py-2 pl-3 bg-white rounded-md shadow-lg border border-gray-200 gap-2 max-h-120 overflow-auto"
             ref={ref}
         >
-            <div id="title" className="flex">
-                <input
-                    type="text"
+            <div id="title" className="flex items-start">
+                <textarea
+                    rows={1}
                     placeholder="Title"
-                    className="text-xl font-medium text-black w-130 h-7 outline-none my-2 "
+                    className="text-xl font-medium text-black w-130 overflow-hidden outline-none my-2 resize-none"
                     name="title"
                     value={content.title}
-                    onChange={handleContent}
+                    onChange={(e) => {
+                        handleContent(e);
+                        handleInputResize(e);
+                    }}
                 />
                 <img
                     src={content.pin ? pinFilledIcon : pinIcon}
                     alt="pin"
-                    className="w-5 mt-3 mr-3 "
+                    className="w-5 mt-3 mr-3 cursor-pointer"
                     onClick={handlePinClick}
                 />
             </div>
             <div id="description">
-                <input
-                    type="text"
+                <textarea
                     placeholder="Take a note..."
-                    className="text-gray-800  outline-none"
-                    name="description" 
+                    className="text-gray-800 w-130 resize-none overflow-hidden outline-none"
+                    rows={1}
+                    name="description"
                     value={content.description}
-                    onChange={handleContent}
+                    onChange={(e) => {
+                        handleContent(e);
+                        handleInputResize(e);
+                    }}
                 />
             </div>
-            <div id="close" className="flex justify-end pr-8 mb-1 ">
-                <button className="text-gray-900" onClick={handleClose}>
+            <div
+                id="actions"
+                className="flex justify-between items-center pr-8 mb-1 mt-2"
+            >
+                {isModalView ? (
+                    <button
+                        className="text-gray-800 cursor-pointer hover:bg-gray-200 px-3 py-1 rounded-lg text-sm"
+                        onClick={() => onDeleteModal(content.id)}
+                    >
+                        Delete Note
+                    </button>
+                ) : undefined}
+
+                <button
+                    className="text-gray-800 cursor-pointer hover:bg-gray-200 px-4 py-1.5 rounded-lg"
+                    onClick={handleClose}
+                >
                     Close
                 </button>
             </div>
@@ -116,7 +148,13 @@ export default function TakeNote({ addNote }) {
     );
 
     return (
-        <div className="flex flex-col items-center justify-center ml-10 mt-8 ">
+        <div
+            className={
+                isModalView
+                    ? ""
+                    : "flex flex-col items-center justify-center ml-10 mt-8"
+            }
+        >
             {isTyping ? typing : visual}
         </div>
     );

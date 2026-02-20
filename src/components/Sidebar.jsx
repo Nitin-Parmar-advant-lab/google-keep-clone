@@ -1,23 +1,13 @@
-import { useState } from "react";
+// import { useState } from "react";
 import notesIcon from "../assets/2-side/note-logo.svg";
 import binIcon from "../assets/2-side/bin-logo.svg";
+import { SIDEBAR_ITEMS } from "../App";
 
-const SIDEBAR_ITEMS = {
-    NOTES: "notes",
-    BIN: "bin"
-}
-
-export default function Sidebar() {
-    const [selected, setSelected] = useState(SIDEBAR_ITEMS.NOTES);
-
-    function handleSelect(type) {
-        setSelected(type);
-    }
-
+export default function Sidebar({ view, onViewChange }) {
     let notesClass = "w-10 h-10 rounded-full p-1";
     let binClass = "w-10 h-10 rounded-full p-1";
 
-    if (selected === SIDEBAR_ITEMS.NOTES) {
+    if (view === SIDEBAR_ITEMS.NOTES) {
         notesClass += " bg-[#feefc3]";
     } else {
         binClass += " bg-[#feefc3]";
@@ -30,7 +20,7 @@ export default function Sidebar() {
                     src={notesIcon}
                     alt="notes"
                     className={notesClass}
-                    onClick={() => handleSelect(SIDEBAR_ITEMS.NOTES)}
+                    onClick={() => onViewChange(SIDEBAR_ITEMS.NOTES)}
                 />
             </div>
 
@@ -39,7 +29,7 @@ export default function Sidebar() {
                     src={binIcon}
                     alt="deleted notes"
                     className={binClass}
-                    onClick={() => handleSelect(SIDEBAR_ITEMS.BIN)}
+                    onClick={() => onViewChange(SIDEBAR_ITEMS.BIN)}
                 />
             </div>
         </div>
