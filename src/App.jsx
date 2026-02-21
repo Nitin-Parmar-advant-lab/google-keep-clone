@@ -11,19 +11,24 @@ export const SIDEBAR_ITEMS = {
 
 export default function App() {
     const [selected, setSelected] = useState(SIDEBAR_ITEMS.NOTES);
+    const [isDarkMode, setIsDarkMode] = useState(false);
 
     function handleSelect(type) {
         setSelected(type);
     }
 
+    function changeMode() {
+        setIsDarkMode((prev) => !prev);
+    }
+
     return (
-        <>
-            <Navigator />
+        <div className={`${isDarkMode ? "dark" : ""} bg-white dark:bg-[#202124] min-h-screen`}>
+            <Navigator mode={isDarkMode} changeMode={changeMode}/>
             <Sidebar
                 view={selected}
                 onViewChange={(type) => handleSelect(type)}
             />
             <MainSection view={selected} />
-        </>
+        </div>
     );
 }
