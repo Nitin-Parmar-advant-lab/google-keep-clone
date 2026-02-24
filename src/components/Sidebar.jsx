@@ -5,7 +5,7 @@ import { MdOutlineLightbulb } from "react-icons/md";
 import { LuTrash2 } from "react-icons/lu";
 
 // import binIcon from "../assets/2-side/bin-logo.svg";
-import { SIDEBAR_ITEMS } from "../App";
+import { SIDEBAR_ITEMS } from "../constants.js";
 
 export default function Sidebar({ view, onViewChange }) {
     let notesClass = "w-10 h-10 rounded-full p-1";

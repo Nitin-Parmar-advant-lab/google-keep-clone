@@ -33,7 +33,7 @@ export default function NoteView({
                             onPin?.(note.id);
                         }}
                     >
-                        {note.pin ? (
+                        {!isBinView && (note.pin ? (
                             <img
                                 src={pinFilledIcon}
                                 alt="pinned"
@@ -47,7 +47,7 @@ export default function NoteView({
                                 className="w-5 cursor-pointer dark:invert"
                                 title="pin Note"
                             />
-                        )}
+                        ))}
                     </button>
                 </div>
 

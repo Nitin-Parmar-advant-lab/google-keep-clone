@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { SIDEBAR_ITEMS } from "../App.jsx";
+import { SIDEBAR_ITEMS } from "../constants.js";
 
 import Notes from "./Notes.jsx";
 import TakeNote from "./TakeNote.jsx";

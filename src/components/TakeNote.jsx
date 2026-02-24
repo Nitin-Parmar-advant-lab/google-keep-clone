@@ -34,7 +34,7 @@ export default function TakeNote({
         setTyping(true);
     }
 
-    function handleClose() {
+    const handleClose = useCallback(function handleClose() {
         if (isModalView) {
             onSaveModal(content);
         } else {
@@ -49,21 +49,24 @@ export default function TakeNote({
                 isDeleted: false,
             });
         }
-    }
+    }, [isModalView, onSaveModal, content, addNote]);
 
-    const handleOutsideClick = useCallback(function handleOutsideClick(e) {
-        if (ref.current && !ref.current.contains(e.target)) {
-            handleClose();
-        }
-    }, []);
+    const handleOutsideClick = useCallback(
+        function handleOutsideClick(e) {
+            if (ref.current && !ref.current.contains(e.target)) {
+                handleClose();
+            }
+        },
+        [handleClose],
+    );
 
     useEffect(() => {
-        if (!isTyping || isModalView) return;
+        if (!isTyping ) return;
 
         document.addEventListener("mousedown", handleOutsideClick);
         return () =>
             document.removeEventListener("mousedown", handleOutsideClick);
-    }, [isTyping, isModalView, handleOutsideClick]);
+    }, [isTyping, handleOutsideClick]);
 
     function handleInputResize(e) {
         e.target.style.height = "auto";
